@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         horizontalAxisValue = Input.GetAxisRaw("Horizontal");
-        verticalAxisValue = Input.GetAxisRaw("Vertical");
+        verticalAxisValue = Input.GetAxisRaw("Jump");
 
         MoveCharacter(horizontalAxisValue);
         PlayerMovementAnimation(horizontalAxisValue, verticalAxisValue);
