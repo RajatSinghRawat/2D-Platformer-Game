@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Animator animator;
     [SerializeField] private BoxCollider2D boxCollider;
+    [SerializeField] private Rigidbody2D PlayerRigidBody;
     private Vector2 BoxcolliderInitialSize;
     private Vector2 BoxcolliderInitialOffSet;
     [SerializeField] private Vector2 BoxColliderReducedSize;
@@ -14,7 +15,8 @@ public class PlayerController : MonoBehaviour
     private float horizontalAxisValue, verticalAxisValue;
     private Vector3 scale, position;
     private bool isRunning;
-    [SerializeField] private float speed;
+    [SerializeField] private float speed, jumpForce;
+    private Vector2 force;
 
 
     void Awake()
@@ -22,6 +24,7 @@ public class PlayerController : MonoBehaviour
         BoxcolliderInitialSize = boxCollider.size;
         BoxcolliderInitialOffSet = boxCollider.offset;
         isRunning = false;
+        force = new Vector2(0f, jumpForce);
     }
 
     // Start is called before the first frame update
@@ -36,17 +39,27 @@ public class PlayerController : MonoBehaviour
         horizontalAxisValue = Input.GetAxisRaw("Horizontal");
         verticalAxisValue = Input.GetAxisRaw("Jump");
 
-        MoveCharacter(horizontalAxisValue);
+        MoveCharacter(horizontalAxisValue, verticalAxisValue);
         PlayerMovementAnimation(horizontalAxisValue, verticalAxisValue);
         Crouch();
     }
 
 
-    private void MoveCharacter(float horizontal)
+    private void MoveCharacter(float horizontal, float vertical)
     {
+        //move character horizontally
         position = transform.position;
         position.x += horizontal * speed * Time.deltaTime;
         transform.position = position;
+
+        //move character vertically
+        if (vertical > 0)
+        {
+            if (boxCollider.IsTouchingLayers(LayerMask.GetMask("Platform")))
+            {
+                PlayerRigidBody.AddForce(force, ForceMode2D.Force);
+            }
+        }
     }
 
 
@@ -61,7 +74,7 @@ public class PlayerController : MonoBehaviour
                 boxCollider.offset = BoxColliderReducedOffSet;              
             }
         }
-        else
+        else if(Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
         {
             animator.SetBool("Crouch", false);
             boxCollider.size = BoxcolliderInitialSize;
