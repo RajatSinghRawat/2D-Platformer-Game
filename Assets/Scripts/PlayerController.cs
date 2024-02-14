@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private bool isRunning;
     [SerializeField] private float speed, jumpForce;
     private Vector2 force;
+    [SerializeField] private ScoreController scoreController;
 
 
     void Awake()
@@ -114,5 +115,10 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("Jump", false);
         }
+    }
+
+    public void PickUpKey()
+    {
+        scoreController.IncreaseScore(10);
     }
 }
