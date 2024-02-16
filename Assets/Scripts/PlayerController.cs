@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class PlayerController : MonoBehaviour
     private float horizontalAxisValue, verticalAxisValue;
     private Vector3 scale, position;
     private bool isRunning;
-    [SerializeField] private float speed, jumpForce;
+    [SerializeField] private float speed, jumpForce, PlayerDeadAnimationTime;
     private Vector2 force;
     [SerializeField] private ScoreController scoreController;
 
@@ -120,5 +121,23 @@ public class PlayerController : MonoBehaviour
     public void PickUpKey()
     {
         scoreController.IncreaseScore(10);
+    }
+
+    public void KillPlayer()
+    {
+        animator.SetBool("Dead", true);
+        ReloadLevel();
+    }
+
+    private void ReloadLevel()
+    {
+        StartCoroutine("ReloadAfterAnimationFinished");
+    }
+
+
+    private IEnumerator ReloadAfterAnimationFinished()
+    {
+        yield return new WaitForSeconds(PlayerDeadAnimationTime);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class KeyController : MonoBehaviour
 {
     [SerializeField] private Animator animator;
-    [SerializeField] private float animationTime;
+    [SerializeField] private float FadeOutAnimationTime;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -20,7 +20,7 @@ public class KeyController : MonoBehaviour
 
     private IEnumerator DestroyAfterAnimationFinished()
     {       
-        yield return new WaitForSeconds(animationTime);
+        yield return new WaitForSeconds(FadeOutAnimationTime);
         Destroy(transform.parent.gameObject);
     }
 }
