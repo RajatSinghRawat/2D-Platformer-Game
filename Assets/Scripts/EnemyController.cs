@@ -9,7 +9,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float speed;                   // Movement speed
     [SerializeField] private float PatrollingDistance;      // Amplitude of the sine wave
     [SerializeField] private float frequency;               // Frequency of the sine wave
-    [SerializeField] bool rightFlipped;
+    [SerializeField] private bool rightFlipped;
     
     private float xOffset;
     private Vector2 startPosition, newPosition;             // Starting position and New position
@@ -18,6 +18,10 @@ public class EnemyController : MonoBehaviour
     {
         // Save the starting position       
         startPosition = transform.position;
+        if(!rightFlipped)
+        {
+            PatrollingDistance = -(PatrollingDistance);
+        }
     }
 
     void Update()

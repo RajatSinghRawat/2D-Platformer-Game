@@ -17,7 +17,7 @@ public class HealthManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+    
     public void UpdateHearts(int remainingHearts)
     {
         hearts[remainingHearts].SetActive(false); 
