@@ -15,24 +15,35 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 BoxColliderReducedOffSet;
     private float horizontalAxisValue, verticalAxisValue;
     private Vector3 scale, position;
-    private bool isRunning;
-    [SerializeField] private float speed, jumpForce, PlayerDeadAnimationTime;
+    private bool isRunning, canLooseLife;
+    [SerializeField] private float speed, jumpForce, PlayerDeadAnimationTime, PlayerRechargeAnimationTime;
     private Vector2 force;
     [SerializeField] private ScoreController scoreController;
+    [SerializeField] private HealthManager healthManager;
+    [SerializeField] private int MaxLives;
+    [SerializeField] private int RemainingLives;
 
+
+    //getter
+    public int getMaxLives()
+    {
+        return MaxLives; 
+    }
 
     void Awake()
     {
         BoxcolliderInitialSize = boxCollider.size;
         BoxcolliderInitialOffSet = boxCollider.offset;
         isRunning = false;
+        canLooseLife = true;
         force = new Vector2(0f, jumpForce);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        RemainingLives = MaxLives;
+        healthManager.PlaceHearts(MaxLives);
     }
 
     // Update is called once per frame
@@ -63,7 +74,6 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
 
     private void Crouch()
     {
@@ -123,10 +133,28 @@ public class PlayerController : MonoBehaviour
         scoreController.IncreaseScore(10);
     }
 
+
+    public void LooseOneLife()
+    {
+        if(canLooseLife)
+        {
+            RemainingLives--;
+            if(RemainingLives < 1)
+            {
+                KillPlayer();
+            }
+            else
+            {
+                StartCoroutine("RechargeTime");
+            }
+            healthManager.UpdateHearts(RemainingLives);
+        }
+    }
+
     public void KillPlayer()
     {
-        animator.SetBool("Dead", true);
-        ReloadLevel();
+        animator.SetBool("Dead", true);      
+        ReloadLevel();    
     }
 
     private void ReloadLevel()
@@ -138,6 +166,16 @@ public class PlayerController : MonoBehaviour
     private IEnumerator ReloadAfterAnimationFinished()
     {
         yield return new WaitForSeconds(PlayerDeadAnimationTime);
+        animator.SetBool("Dead", false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private IEnumerator RechargeTime()
+    {
+        canLooseLife = false;
+        animator.SetBool("Recharge", true);
+        yield return new WaitForSeconds(PlayerRechargeAnimationTime);
+        animator.SetBool("Recharge", false);
+        canLooseLife = true;
     }
 }

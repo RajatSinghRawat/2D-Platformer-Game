@@ -13,6 +13,7 @@ public class KeyController : MonoBehaviour
         {
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             playerController.PickUpKey();
+            gameObject.GetComponentInChildren<BoxCollider2D>().enabled = false;
             animator.SetBool("Fade_Out", true);
             StartCoroutine("DestroyAfterAnimationFinished");
         }
