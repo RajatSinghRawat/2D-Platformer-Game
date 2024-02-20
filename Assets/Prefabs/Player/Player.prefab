@@ -249,7 +249,12 @@ MonoBehaviour:
   speed: 8
   jumpForce: 40
   PlayerDeadAnimationTime: 1
+  PlayerRechargeAnimationTime: 1
   scoreController: {fileID: 0}
+  healthManager: {fileID: 0}
+  gameOverController: {fileID: 0}
+  MaxLives: 3
+  RemainingLives: 0
 --- !u!61 &6989726293709810252
 BoxCollider2D:
   m_ObjectHideFlags: 0

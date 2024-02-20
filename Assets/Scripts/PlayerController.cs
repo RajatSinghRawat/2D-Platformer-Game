@@ -15,11 +15,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 BoxColliderReducedOffSet;
     private float horizontalAxisValue, verticalAxisValue;
     private Vector3 scale, position;
-    private bool isRunning, canLooseLife;
+    private bool isRunning, canLooseOneLife;
     [SerializeField] private float speed, jumpForce, PlayerDeadAnimationTime, PlayerRechargeAnimationTime;
     private Vector2 force;
     [SerializeField] private ScoreController scoreController;
     [SerializeField] private HealthManager healthManager;
+    [SerializeField] private GameOverController gameOverController;
     [SerializeField] private int MaxLives;
     [SerializeField] private int RemainingLives;
 
@@ -35,7 +36,7 @@ public class PlayerController : MonoBehaviour
         BoxcolliderInitialSize = boxCollider.size;
         BoxcolliderInitialOffSet = boxCollider.offset;
         isRunning = false;
-        canLooseLife = true;
+        canLooseOneLife = true;
         force = new Vector2(0f, jumpForce);
     }
 
@@ -136,7 +137,7 @@ public class PlayerController : MonoBehaviour
 
     public void LooseOneLife()
     {
-        if(canLooseLife)
+        if(canLooseOneLife)
         {
             RemainingLives--;
             if(RemainingLives < 1)
@@ -153,29 +154,32 @@ public class PlayerController : MonoBehaviour
 
     public void KillPlayer()
     {
-        animator.SetBool("Dead", true);      
-        ReloadLevel();    
+        animator.SetBool("Dead", true);
+        gameOverController.PlayerDied();    
+        this.enabled = false;
+        boxCollider.enabled = false;
+        PlayerRigidBody.constraints = RigidbodyConstraints2D.FreezePosition;
     }
 
-    private void ReloadLevel()
+    /*private void ReloadLevel()
     {
         StartCoroutine("ReloadAfterAnimationFinished");
-    }
+    }*/
 
 
-    private IEnumerator ReloadAfterAnimationFinished()
+    /*private IEnumerator ReloadAfterAnimationFinished()
     {
         yield return new WaitForSeconds(PlayerDeadAnimationTime);
         animator.SetBool("Dead", false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+    }*/
 
     private IEnumerator RechargeTime()
     {
-        canLooseLife = false;
+        canLooseOneLife = false;
         animator.SetBool("Recharge", true);
         yield return new WaitForSeconds(PlayerRechargeAnimationTime);
         animator.SetBool("Recharge", false);
-        canLooseLife = true;
+        canLooseOneLife = true;
     }
 }
