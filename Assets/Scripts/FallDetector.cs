@@ -21,6 +21,7 @@ public class FallDetector : MonoBehaviour
     {
         if (collision.GetComponent<PlayerController>() != null)
         {
+            PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }

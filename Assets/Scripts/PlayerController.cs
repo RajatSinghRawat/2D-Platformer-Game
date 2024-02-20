@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     private float horizontalAxisValue, verticalAxisValue;
     private Vector3 scale, position;
     private bool isRunning, canLooseOneLife;
-    [SerializeField] private float speed, jumpForce, PlayerDeadAnimationTime, PlayerRechargeAnimationTime;
+    [SerializeField] private float speed, jumpForce, PlayerRechargeAnimationTime;
     private Vector2 force;
     [SerializeField] private ScoreController scoreController;
     [SerializeField] private HealthManager healthManager;
