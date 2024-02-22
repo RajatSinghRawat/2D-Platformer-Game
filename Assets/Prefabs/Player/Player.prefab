@@ -247,8 +247,7 @@ MonoBehaviour:
   BoxColliderReducedSize: {x: 0.7654297, y: 1.231795}
   BoxColliderReducedOffSet: {x: -0.10258, y: 0.5781891}
   speed: 8
-  jumpForce: 40
-  PlayerDeadAnimationTime: 1
+  jumpForce: 50
   PlayerRechargeAnimationTime: 1
   scoreController: {fileID: 0}
   healthManager: {fileID: 0}
