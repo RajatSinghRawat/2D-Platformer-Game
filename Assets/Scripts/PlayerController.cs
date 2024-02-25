@@ -58,7 +58,6 @@ public class PlayerController : MonoBehaviour
         Crouch();
     }
 
-
     private void MoveCharacter(float horizontal, float vertical)
     {
         //move character horizontally
@@ -94,7 +93,6 @@ public class PlayerController : MonoBehaviour
             boxCollider.offset = BoxcolliderInitialOffSet;
         }
     }
-
 
     private void PlayerMovementAnimation(float horizontalValue, float verticalValue)
     {
@@ -134,7 +132,6 @@ public class PlayerController : MonoBehaviour
         scoreController.IncreaseScore(10);
     }
 
-
     public void LooseOneLife()
     {
         if(canLooseOneLife)
@@ -159,6 +156,15 @@ public class PlayerController : MonoBehaviour
         this.enabled = false;
         boxCollider.enabled = false;
         PlayerRigidBody.constraints = RigidbodyConstraints2D.FreezePosition;
+    }
+
+    public void PlayerInactive()
+    {
+        animator.SetFloat("Speed", 0f);
+        this.enabled = false;
+        boxCollider.enabled = false;
+        PlayerRigidBody.constraints = RigidbodyConstraints2D.FreezePosition;
+        //gameObject.SetActive(false);
     }
 
     /*private void ReloadLevel()
