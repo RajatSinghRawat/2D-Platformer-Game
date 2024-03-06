@@ -25,6 +25,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int RemainingLives;
 
 
+    private bool isGrounded, isJumping, playerStartedJumping, isCrouched;
+    public Vector2 boxSize;
+    public LayerMask whatIsGround;
+
+    private AudioSource PlayerAudioSource;
+
+
+    private Dictionary<Sounds, bool> isSoundClipPlaying;
+
+
     //getter
     public int getMaxLives()
     {
@@ -43,35 +53,116 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        isSoundClipPlaying = new Dictionary<Sounds, bool>();
+
         RemainingLives = MaxLives;
         healthManager.PlaceHearts(MaxLives);
+        isJumping = false;
+        playerStartedJumping = false;
+
+        PlayerAudioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     private void Update()
     {
         horizontalAxisValue = Input.GetAxisRaw("Horizontal");
-        verticalAxisValue = Input.GetAxisRaw("Jump");
-
-        MoveCharacter(horizontalAxisValue, verticalAxisValue);
+        MoveCharacter(horizontalAxisValue);
         PlayerMovementAnimation(horizontalAxisValue, verticalAxisValue);
         Crouch();
+        JumpCharacter();
+        CheckForAboveTheGround();
+        CheckForReturnToGround();
+        PlayerMovementSound();
+
+        //Debug.Log("isJumping = " + isJumping);
     }
 
-    private void MoveCharacter(float horizontal, float vertical)
+
+
+    private void JumpCharacter()
+    {
+        if(Input.GetButtonDown("Jump"))
+        {
+            if (!isCrouched)
+            {
+                isGrounded = Physics2D.OverlapBox(transform.position, boxSize, 0f, whatIsGround);
+                if (isGrounded)
+                {
+                    PlayerRigidBody.AddForce(force, ForceMode2D.Force);
+                    animator.SetTrigger("Jump");
+
+                    HandlePlayerAudio(Sounds.PlayerJump);
+
+                    playerStartedJumping = true;
+                }
+            }           
+        }
+    }
+
+    private void CheckForAboveTheGround()
+    {
+        if(playerStartedJumping)
+        {
+            bool isPlayerGrounded = Physics2D.OverlapBox(transform.position, boxSize, 0f, whatIsGround);
+            if(!isPlayerGrounded)
+            {
+                isJumping = true;
+                playerStartedJumping = false;
+            }
+        }
+    }
+
+    private void CheckForReturnToGround()
+    {
+        if(isJumping)
+        {
+            bool isAgainGrounded = Physics2D.OverlapBox(transform.position, boxSize, 0f, whatIsGround);
+
+            
+            if (isAgainGrounded)
+            {
+                HandlePlayerAudio(Sounds.PlayerLand);
+
+                isJumping = false;
+            }
+
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, boxSize);
+    }
+
+
+    private void PlayerMovementSound()
+    {
+        if(Input.GetButton("Horizontal"))
+        {
+            if (!isJumping)
+            {
+                HandlePlayerAudio(Sounds.PlayerMove);
+            }
+        }        
+    }
+
+
+    private void MoveCharacter(float horizontal)
     {
         //move character horizontally
-        position = transform.position;
-        position.x += horizontal * speed * Time.deltaTime;
-        transform.position = position;
-
-        //move character vertically
-        if (vertical > 0)
+        if (!isCrouched)
         {
-            if (boxCollider.IsTouchingLayers(LayerMask.GetMask("Platform")))
-            {
-                PlayerRigidBody.AddForce(force, ForceMode2D.Force);
-            }
+          if (transform.position.y < position.y)
+          {
+              isJumping = true;
+          }
+
+
+          position = transform.position;
+          position.x += horizontal * speed * Time.deltaTime;
+          transform.position = position;                      
         }
     }
 
@@ -83,7 +174,8 @@ public class PlayerController : MonoBehaviour
             {
                 animator.SetBool("Crouch", true);
                 boxCollider.size = BoxColliderReducedSize;
-                boxCollider.offset = BoxColliderReducedOffSet;              
+                boxCollider.offset = BoxColliderReducedOffSet; 
+                isCrouched = true;
             }
         }
         else if(Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
@@ -91,40 +183,39 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("Crouch", false);
             boxCollider.size = BoxcolliderInitialSize;
             boxCollider.offset = BoxcolliderInitialOffSet;
+            isCrouched = false;
         }
     }
 
     private void PlayerMovementAnimation(float horizontalValue, float verticalValue)
     {
-        //run
-        animator.SetFloat("Speed", Mathf.Abs(horizontalValue));
+        if (isJumping)
+        {
+            animator.SetFloat("Speed", 0f);
+        }
+        else if (!isJumping)
+        {
+            //run
+            animator.SetFloat("Speed", Mathf.Abs(horizontalValue));
+            //SoundManager.Instance.Play(Sounds.PlayerMove);
+        }
 
         scale = transform.localScale;
         if (horizontalValue < 0)
         {
-            scale.x = -1f * Mathf.Abs(scale.x);
-            isRunning = true;
+          scale.x = -1f * Mathf.Abs(scale.x);
+          isRunning = true;
         }
         else if (horizontalValue > 0)
         {
-            scale.x = Mathf.Abs(scale.x);
-            isRunning = true;
+          scale.x = Mathf.Abs(scale.x);
+          isRunning = true;
         }
         else
         {
-            isRunning = false;
+          isRunning = false;
         }
-        transform.localScale = scale;
-
-        //jump
-        if (verticalValue > 0)
-        {
-            animator.SetBool("Jump", true);
-        }
-        else
-        {
-            animator.SetBool("Jump", false);
-        }
+        transform.localScale = scale;       
     }
 
     public void PickUpKey()
@@ -164,21 +255,7 @@ public class PlayerController : MonoBehaviour
         this.enabled = false;
         boxCollider.enabled = false;
         PlayerRigidBody.constraints = RigidbodyConstraints2D.FreezePosition;
-        //gameObject.SetActive(false);
     }
-
-    /*private void ReloadLevel()
-    {
-        StartCoroutine("ReloadAfterAnimationFinished");
-    }*/
-
-
-    /*private IEnumerator ReloadAfterAnimationFinished()
-    {
-        yield return new WaitForSeconds(PlayerDeadAnimationTime);
-        animator.SetBool("Dead", false);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }*/
 
     private IEnumerator RechargeTime()
     {
@@ -188,4 +265,28 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("Recharge", false);
         canLooseOneLife = true;
     }
+
+    private IEnumerator CheckClipIsSillPlaying(float duration, Sounds sound)
+    {
+        yield return new WaitForSeconds(duration);
+        isSoundClipPlaying[sound] = false;
+    }
+
+
+    private void HandlePlayerAudio(Sounds sound)
+    {
+        if (!isSoundClipPlaying.ContainsKey(sound))
+        {
+            isSoundClipPlaying.Add(sound, false);
+        }
+
+            if (isSoundClipPlaying[sound] == false)
+            {
+                Debug.Log("Has Entry");
+                float clipDuration = SoundManager.Instance.PlaySoundOfAudioSource(PlayerAudioSource, sound);
+                isSoundClipPlaying[sound] = true;
+                StartCoroutine(CheckClipIsSillPlaying(clipDuration, sound));
+            }  
+    }
+
 }

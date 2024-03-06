@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class LobbyController : MonoBehaviour
 {
-
     [SerializeField] private Button playButton;
     [SerializeField] private Button quitButton;
     [SerializeField] private GameObject LevelSelection;
@@ -17,12 +16,13 @@ public class LobbyController : MonoBehaviour
 
     private void PlayGame()
     {
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        SoundManager.Instance.Play(Sounds.ButtonClick);
         LevelSelection.SetActive(true);  
     }
 
     private void QuitGame()
     {
+        SoundManager.Instance.Play(Sounds.ButtonClick);
         Application.Quit();
     }
 }

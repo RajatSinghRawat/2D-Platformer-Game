@@ -18,6 +18,7 @@ public class LevelLoader : MonoBehaviour
     {
         if(LevelName == "Lobby")
         {
+            SoundManager.Instance.Play(Sounds.ButtonClick);
             SceneManager.LoadScene(LevelName);
         }
         else
@@ -30,13 +31,20 @@ public class LevelLoader : MonoBehaviour
                     break;
 
                 case LevelStatus.Unlocked:
-                    SceneManager.LoadScene(LevelName);
+                    LoadSceneAndPlaySound();
                     break;
 
                 case LevelStatus.Completed:
-                    SceneManager.LoadScene(LevelName);
+                    LoadSceneAndPlaySound();
                     break;
             }
         }
+    }
+
+    public void LoadSceneAndPlaySound()
+    {
+        SoundManager.Instance.Play(Sounds.ButtonClick);
+        SceneManager.LoadScene(LevelName);
+        SoundManager.Instance.setVolumeOfAudioSource(SoundManager.Instance.soundMusic, 0.1f);
     }
 }

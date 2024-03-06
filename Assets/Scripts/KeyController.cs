@@ -11,6 +11,7 @@ public class KeyController : MonoBehaviour
     {
         if(collision.gameObject.GetComponent<PlayerController>() != null)
         {
+            SoundManager.Instance.Play(Sounds.Collectible);
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             playerController.PickUpKey();
             gameObject.GetComponentInChildren<BoxCollider2D>().enabled = false;
