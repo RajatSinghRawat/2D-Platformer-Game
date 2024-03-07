@@ -13,7 +13,7 @@ public class GameOverController : MonoBehaviour
 
     public void PlayerDied()
     {
-        SoundManager.Instance.PlayMusic(Sounds.PlayerDeath);
+        SoundManager.Instance.PlayMusic(Sounds.LevelFail);
         gameObject.SetActive(true);
     }
 

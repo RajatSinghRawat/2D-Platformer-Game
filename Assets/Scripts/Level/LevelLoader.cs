@@ -18,8 +18,9 @@ public class LevelLoader : MonoBehaviour
     {
         if(LevelName == "Lobby")
         {
-            SoundManager.Instance.Play(Sounds.ButtonClick);
-            SceneManager.LoadScene(LevelName);
+            SoundManager.Instance.PlayMusic(Sounds.Music);
+            LoadSceneAndPlaySound(Sounds.ButtonClick);
+            SetMusicVolume(0.5f);
         }
         else
         {
@@ -31,20 +32,27 @@ public class LevelLoader : MonoBehaviour
                     break;
 
                 case LevelStatus.Unlocked:
-                    LoadSceneAndPlaySound();
+                    LoadSceneAndPlaySound(Sounds.ButtonClick);
+                    SetMusicVolume(0.1f);
+                    SoundManager.Instance.Play(Sounds.NewLevelStart);
                     break;
 
                 case LevelStatus.Completed:
-                    LoadSceneAndPlaySound();
+                    LoadSceneAndPlaySound(Sounds.ButtonClick);
+                    SetMusicVolume(0.1f);                  
                     break;
             }
         }
     }
 
-    public void LoadSceneAndPlaySound()
+    public void LoadSceneAndPlaySound(Sounds sound)
     {
-        SoundManager.Instance.Play(Sounds.ButtonClick);
-        SceneManager.LoadScene(LevelName);
-        SoundManager.Instance.setVolumeOfAudioSource(SoundManager.Instance.soundMusic, 0.1f);
+        SoundManager.Instance.Play(sound);
+        SceneManager.LoadScene(LevelName);      
+    }
+
+    private void SetMusicVolume(float volume)
+    {
+        SoundManager.Instance.setVolumeOfAudioSource( SoundManager.Instance.soundMusic, volume);
     }
 }

@@ -136,6 +136,9 @@ public enum Sounds
     PlayerDeath,
     EnemyAttack,
     EnemyDeath,
-    Collectible
+    Collectible,
+    LevelFinish,
+    LevelFail,
+    NewLevelStart
 }
 

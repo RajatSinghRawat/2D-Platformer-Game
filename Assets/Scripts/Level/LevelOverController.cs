@@ -12,7 +12,7 @@ public class LevelOverController : MonoBehaviour
         if(collision.GetComponent<PlayerController>() != null)
         {
             collision.GetComponent<PlayerController>().PlayerInactive();
-            SoundManager.Instance.Play(Sounds.ButtonClick);
+            SoundManager.Instance.Play(Sounds.LevelFinish);
             LevelManager.Instance.MarkCurrentLevelComplete();
             levelCompleteController.LevelComplete();
         }

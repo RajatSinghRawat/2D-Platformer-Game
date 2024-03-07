@@ -119,15 +119,13 @@ public class PlayerController : MonoBehaviour
         if(isJumping)
         {
             bool isAgainGrounded = Physics2D.OverlapBox(transform.position, boxSize, 0f, whatIsGround);
-
-            
+           
             if (isAgainGrounded)
             {
                 HandlePlayerAudio(Sounds.PlayerLand);
 
                 isJumping = false;
             }
-
         }
     }
 
@@ -230,7 +228,7 @@ public class PlayerController : MonoBehaviour
             RemainingLives--;
             if(RemainingLives < 1)
             {
-                KillPlayer();
+                KillPlayer(true);
             }
             else
             {
@@ -240,13 +238,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void KillPlayer()
+    public void KillPlayer(bool clipLenthInReturn)
     {
+        float waitTime = SoundManager.Instance.PlaySoundOfAudioSource(PlayerAudioSource, Sounds.PlayerDeath);
         animator.SetBool("Dead", true);
-        gameOverController.PlayerDied();    
         this.enabled = false;
         boxCollider.enabled = false;
         PlayerRigidBody.constraints = RigidbodyConstraints2D.FreezePosition;
+        gameOverController.Invoke("PlayerDied", waitTime);
     }
 
     public void PlayerInactive()
@@ -275,6 +274,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandlePlayerAudio(Sounds sound)
     {
+        float clipDuration = 0f;
         if (!isSoundClipPlaying.ContainsKey(sound))
         {
             isSoundClipPlaying.Add(sound, false);
@@ -282,11 +282,10 @@ public class PlayerController : MonoBehaviour
 
             if (isSoundClipPlaying[sound] == false)
             {
-                Debug.Log("Has Entry");
-                float clipDuration = SoundManager.Instance.PlaySoundOfAudioSource(PlayerAudioSource, sound);
+                //Debug.Log("Has Entry");
+                clipDuration = SoundManager.Instance.PlaySoundOfAudioSource(PlayerAudioSource, sound);
                 isSoundClipPlaying[sound] = true;
                 StartCoroutine(CheckClipIsSillPlaying(clipDuration, sound));
-            }  
+            }
     }
-
 }
