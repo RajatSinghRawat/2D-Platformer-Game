@@ -23,9 +23,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameOverController gameOverController;
     [SerializeField] private int MaxLives;
     [SerializeField] private int RemainingLives;
+    [SerializeField] private float delayForDoubleJump;
 
 
-    private bool isGrounded, isJumping, playerStartedJumping, isCrouched;
+    private bool isGrounded, isJumping, playerStartedJumping, isCrouched, canDoubleJump;
     public Vector2 boxSize;
     public LayerMask whatIsGround;
 
@@ -96,10 +97,29 @@ public class PlayerController : MonoBehaviour
                     HandlePlayerAudio(Sounds.PlayerJump);
 
                     playerStartedJumping = true;
+
+
+                    Invoke("EnableDoubleJump", delayForDoubleJump);
+                }
+
+                if(canDoubleJump && !isGrounded)
+                {
+                    PlayerRigidBody.velocity = Vector2.zero;
+                    PlayerRigidBody.AddForce(force, ForceMode2D.Force);
+                    animator.SetTrigger("Jump");
+
+                    canDoubleJump = false;
                 }
             }           
         }
     }
+
+  
+    private void EnableDoubleJump()
+    {
+        canDoubleJump = true;
+    }
+
 
     private void CheckForAboveTheGround()
     {

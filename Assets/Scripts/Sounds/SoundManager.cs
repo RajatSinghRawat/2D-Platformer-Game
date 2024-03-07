@@ -81,6 +81,15 @@ public class SoundManager : MonoBehaviour
         {
             soundMusic.clip = clip; 
             soundMusic.Play();
+
+            if(sound == global::Sounds.Music)
+            { 
+                soundMusic.loop = true;
+            }
+            else
+            {
+                soundMusic.loop = false;
+            }
         }
         else
         {
